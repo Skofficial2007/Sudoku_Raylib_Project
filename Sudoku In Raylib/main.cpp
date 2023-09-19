@@ -2,17 +2,18 @@
 #include <iostream>
 #include <time.h>
 
-// Define the initial Sudoku board
-int initialBoard[9][9] = {};         // Stores the initial Sudoku board
-int solvedBoard[9][9] = {};          // Stores the solved Sudoku board
-bool nonChangebleNumbers[9][9] = {}; // Indicates whether a number is changeable or not
-
 class generatePuzzle
 {
 private:
     int copyBoard[9][9];
 
 public:
+    // Define the initial Sudoku board
+    int initialBoard[9][9] = {};         // Stores the initial Sudoku board
+    int solvedBoard[9][9] = {};          // Stores the solved Sudoku board
+    bool nonChangebleNumbers[9][9] = {}; // Indicates whether a number is changeable or not
+    int id = 0;                          // To check if the new board in not same as previous board
+
     void DefaultBoards()
     {
         int board1[9][9] = {{4, 3, 5, 2, 6, 9, 7, 8, 1},
@@ -74,6 +75,7 @@ public:
                     solvedBoard[i][j] = board1[i][j];
                 }
             }
+            id = 1;
             break;
         }
         case 2:
@@ -86,6 +88,7 @@ public:
                     solvedBoard[i][j] = board2[i][j];
                 }
             }
+            id = 2;
             break;
         }
         case 3:
@@ -98,6 +101,7 @@ public:
                     solvedBoard[i][j] = board3[i][j];
                 }
             }
+            id = 3;
             break;
         }
         case 4:
@@ -110,6 +114,7 @@ public:
                     solvedBoard[i][j] = board4[i][j];
                 }
             }
+            id = 4;
             break;
         }
         default:
@@ -126,7 +131,7 @@ public:
     {
         // Randomly remove numbers from the generated puzzle
         srand(time(NULL)); // Initialize random seed
-        int removals = 35; // Number of numbers to remove
+        int removals = 1;  // Number of numbers to remove
 
         while (removals > 0)
         {
@@ -141,7 +146,23 @@ public:
         }
     }
 
-    generatePuzzle()
+    // To reset the boards
+    void resetPuzzle()
+    {
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                copyBoard[i][j] = 0;
+                nonChangebleNumbers[i][j] = 0;
+                solvedBoard[i][j] = 0;
+                initialBoard[i][j] = 0;
+            }
+        }
+    }
+
+    // Method to generate a new Sudoku puzzle
+    virtual void GenerateNewPuzzle()
     {
         DefaultBoards();
         RemoveElements();
@@ -169,15 +190,22 @@ public:
             }
         }
     }
+
+    generatePuzzle()
+    {
+        GenerateNewPuzzle();
+    }
 };
 
-class SudokuGame
+class SudokuGame : virtual public generatePuzzle
 {
+public:
+    int board[9][9]; // Represents the Sudoku board
+
 private:
     Rectangle cells[9][9];              // Stores the positions and dimensions of each cell
-    int board[9][9];                    // Represents the Sudoku board
-    int windowWidth;                    // Width of the game window
-    int windowHeight;                   // Height of the game window
+    float windowWidth;                  // Width of the game window
+    float windowHeight;                 // Height of the game window
     int offsetX;                        // The offset in x-axis
     int offsetY;                        // The offset in y-axis
     int selectedCellRow = -1;           // Member variables to track the selected cell row
@@ -185,16 +213,49 @@ private:
     bool isRedRectangleVisible = false; // Flag to track if the red rectangle should be visible
     bool isWrongNumber = false;         // To check if there is a wrong input
     float wrongNumberTimer = 0.0f;      // To set the number of sec wrong input text to show
-    Texture2D resetButton;              // To load reset button texture image
-    Rectangle resetButtonRect;          // To create a rectangle on which reset button be set
-    float buttonWidth = 100.0f;         // Width of reset button
-    float buttonHeight = 100.0f;        // Height of reset button
-    float buttonX = 10;                 // X coordinates of the rectangle for reset button
-    float buttonY = 10;                 // Y coordinates of the rectangle for reset button
 
-    // Define the target size for the reset button
-    float targetButtonWidth = 100.0f;
-    float targetButtonHeight = 100.0f;
+    // Reset Button
+    Texture2D resetButton;       // To load reset button texture image
+    Rectangle resetButtonRect;   // To create a rectangle on which reset button be set
+    float buttonWidth = 100.0f;  // Width of reset button
+    float buttonHeight = 100.0f; // Height of reset button
+    float buttonX = 10;          // X coordinates of the rectangle for reset button
+    float buttonY = 10;          // Y coordinates of the rectangle for reset button
+
+    // Turn Off Button
+    Texture2D turnOffButton;                            // To load turn off button texture image
+    Rectangle turnOffButtonRect;                        // To create a rectangle for the turn off button
+    float TFbuttonWidth = 60.0f;                        // Width of Turn Off button
+    float TFbuttonHeight = 60.0f;                       // Height of Turn Off button
+    float TFbuttonX = windowWidth - TFbuttonWidth - 30; // X coordinates of the rectangle for Turn Off button
+    float TFbuttonY = 30;                               // Y coordinates of the rectangle for Turn Off button
+
+    // Next Button
+    Texture2D nextButton;        // To load next button texture image
+    Rectangle nextButtonRect;    // To create a rectangle for the next button
+    float NbuttonWidth = 250.0f; // Width of Turn Off button
+    float NbuttonHeight = 100.0f; // Height of Turn Off button
+    float NbuttonX = windowWidth / 2 + 15;
+    float NbuttonY = windowHeight / 2 + 100;
+
+    // You Win Image and Buttons
+    Texture2D youWinImage; // To load You win image texture file
+    Rectangle youWinRec;
+    Vector2 youWinSize{600.0f, 400.0f};
+    Vector2 youWinPos{windowWidth / 2 - youWinSize.x / 2, windowHeight / 2 - 300};
+
+    Texture2D blurEffect;
+    Rectangle blurRec;
+    Vector2 blurSize{youWinSize.x * 2, youWinSize.y * 2};
+    Vector2 blurPos{windowWidth / 2 - blurSize.x / 2, windowHeight / 2 - blurSize.y / 2};
+
+    Texture2D RestartButton;
+    Rectangle RestartRec;
+    Vector2 restartSize{250.0f, 105.0f};
+    Vector2 restartPos{windowWidth / 2 - restartSize.x - 15.0f, windowHeight / 2 + 97};
+
+    // A score variable to keep track of the player's score
+    int score = 0;
 
     // Array of numeric keys for number input
     int numericKeys[18] = {
@@ -204,6 +265,39 @@ private:
 public:
     SudokuGame(int width, int height, int initialBoard[9][9], int offsetX, int offsetY)
         : windowWidth(width), windowHeight(height), offsetX(offsetX), offsetY(offsetY)
+    {
+        setBoard();
+
+        resetButton = LoadTexture("textures/Reset_Button.png");
+        resetButtonRect = {buttonX, buttonY, buttonWidth, buttonHeight};
+
+        turnOffButton = LoadTexture("textures/Power_Button_Off_Button.png");
+        turnOffButtonRect = {TFbuttonX, TFbuttonY, TFbuttonWidth, TFbuttonHeight};
+
+        nextButton = LoadTexture("textures/Continue_Button.png");
+        nextButtonRect = {NbuttonX, NbuttonY, NbuttonWidth, NbuttonHeight};
+
+        youWinImage = LoadTexture("textures/You_Win_Text.png");
+        youWinRec = {youWinPos.x, youWinPos.y, youWinSize.x, youWinSize.y};
+
+        blurEffect = LoadTexture("textures/effect.png");
+        blurRec = {blurPos.x, blurPos.y, blurSize.x, blurSize.y};
+
+        RestartButton = LoadTexture("textures/Restart_Button.png");
+        RestartRec = {restartPos.x, restartPos.y, restartSize.x, restartSize.y};
+    }
+
+    ~SudokuGame()
+    {
+        UnloadTexture(resetButton);
+        UnloadTexture(turnOffButton);
+        UnloadTexture(nextButton);
+        UnloadTexture(youWinImage);
+        UnloadTexture(blurEffect);
+        UnloadTexture(RestartButton);
+    }
+
+    void setBoard()
     {
         // Initialize cells and board with given dimensions and initial board values
         for (int i = 0; i < 9; i++)
@@ -217,28 +311,25 @@ public:
                 board[i][j] = initialBoard[i][j];
             }
         }
-
-        // Load the reset button image
-        resetButton = LoadTexture("textures/Reset_Button.png");
-
-        // Set the position and size of the reset button rectangle
-        resetButtonRect = {buttonX, buttonY, buttonWidth, buttonHeight};
     }
 
-    // Add this method to handle the reset button click
-    void HandleResetButton()
+    // Method to restart the game with a new puzzle
+    void RestartGame()
     {
-        if (CheckCollisionPointRec(GetMousePosition(), resetButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        // Clear the board
+        for (int i = 0; i < 9; i++)
         {
-            // Reset the game to the initial puzzle (initialBoard)
-            for (int i = 0; i < 9; i++)
+            for (int j = 0; j < 9; j++)
             {
-                for (int j = 0; j < 9; j++)
-                {
-                    board[i][j] = initialBoard[i][j];
-                }
+                board[i][j] = 0;
+                resetPuzzle();
             }
         }
+    }
+
+    void IncrementScore()
+    {
+        score++; // Increment the score when the player wins a game
     }
 
     void DrawGrid()
@@ -269,18 +360,13 @@ public:
         DrawRectangle((float)(offsetX - 3), (float)(cells[8][0].y + cells[8][0].height + offsetY - 3), (float)(9 * (2.0f * windowWidth / 27)) + 6, 6, DARKGRAY);
         DrawRectangle((float)(offsetX - 3), (float)(offsetY - 3), 6, (float)(9 * (2.0f * windowHeight / 27)) + 6, DARKGRAY);
         DrawRectangle((float)(cells[0][8].x + cells[0][8].width + offsetX - 3), (float)(offsetY - 3), 6, (float)(9 * (2.0f * windowHeight / 27)) + 6, DARKGRAY);
-
-        // Draw the reset button with the calculated scale factors
-        DrawTexturePro(resetButton,
-                       Rectangle{0, 0, (float)resetButton.width, (float)resetButton.height},
-                       Rectangle{buttonX, buttonY, targetButtonWidth, targetButtonHeight},
-                       Vector2{0, 0},
-                       0.0f,
-                       WHITE);
     }
 
     void DrawNumbers()
     {
+        // Draw the player's score at the bottom center with a larger font size (e.g., 30)
+        DrawText(TextFormat("Score: %d", score), windowWidth / 2 - MeasureText(TextFormat("Score: %d", score), 30) / 2, windowHeight - 40, 30, DARKGRAY);
+
         for (int i = 0; i < 9; i++)
         {
             for (int j = 0; j < 9; j++)
@@ -321,6 +407,23 @@ public:
                 isWrongNumber = false;
             }
         }
+    }
+
+    void DrawButtons(bool gameWon)
+    {
+        DrawTexturePro(resetButton,
+                       Rectangle{0, 0, (float)resetButton.width, (float)resetButton.height},
+                       resetButtonRect,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+
+        DrawTexturePro(turnOffButton,
+                       Rectangle{0, 0, (float)turnOffButton.width, (float)turnOffButton.height},
+                       turnOffButtonRect,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
     }
 
     void HandleKeyboardInput()
@@ -525,10 +628,158 @@ public:
         return false;
     }
 
-    // To Unload Textures
-    void Unload_Reset_Button()
+    // Method to handle the "Next" button click
+    void HandleNextButtonClick(bool &gameWon)
     {
-        UnloadTexture(resetButton); // Texture unloading
+        int temp = id;
+
+        if (CheckCollisionPointRec(GetMousePosition(), nextButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            // Restart the game with a new puzzle
+            RestartGame();
+
+            while (temp == id)
+            {
+                // Generate a new puzzle
+                GenerateNewPuzzle();
+            }
+
+            // Set Board to new puzzle
+            setBoard();
+
+            // Reset the game won flag
+            gameWon = false;
+        }
+    }
+
+    // Method to handle the reset button click
+    void HandleResetButton(bool &gameWon)
+    {
+        if ((CheckCollisionPointRec(GetMousePosition(), resetButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) || ((gameWon) && (CheckCollisionPointRec(GetMousePosition(), RestartRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))))
+        {
+            // Reset the game to the initial puzzle (initialBoard)
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    board[i][j] = initialBoard[i][j];
+                }
+            }
+
+            if (gameWon)
+            {
+                gameWon = false;
+                score--;
+            }
+        }
+    }
+
+    // Method to handle the turn off button click
+    void HandleTurnOffButton()
+    {
+        if (CheckCollisionPointRec(GetMousePosition(), turnOffButtonRect) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            // Close the window
+            CloseWindow();
+
+            // Exit the program
+            exit(0);
+        }
+    }
+
+    void YouWin()
+    {
+        DrawTexturePro(blurEffect,
+                       Rectangle{0, 0, (float)blurEffect.width, (float)blurEffect.height},
+                       blurRec,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+
+        DrawTexturePro(youWinImage,
+                       Rectangle{0, 0, (float)youWinImage.width, (float)youWinImage.height},
+                       youWinRec,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+
+        DrawTexturePro(nextButton,
+                       Rectangle{0, 0, (float)nextButton.width, (float)nextButton.height},
+                       nextButtonRect,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+
+        DrawTexturePro(RestartButton,
+                       Rectangle{0, 0, (float)RestartButton.width, (float)RestartButton.height},
+                       RestartRec,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+    }
+};
+
+class StartMenu
+{
+private:
+    float windowWidth;
+    float windowHeight;
+
+    Texture2D startBg;
+    Rectangle startBgRec;
+    Vector2 startBgSize {};
+    Vector2 startBgPos {};
+
+    Texture2D startButton;
+    Rectangle startButtonRec;
+    Vector2 startButtonSize {};
+    Vector2 startButtonPos {};
+
+public:
+    StartMenu(int width, int height) : windowWidth(width), windowHeight(height)
+    {
+        startBgSize = {windowWidth - 100, windowHeight - 150};
+        startBgPos = {60.0f, 0.0f};
+
+        startBg = LoadTexture("textures/sudoku_puzzle_game.png");
+        startBgRec = {startBgPos.x, startBgPos.y, startBgSize.x, startBgSize.y};
+
+        startButtonSize = {200.0f, 150.0f};
+        startButtonPos = {windowWidth / 2 - startButtonSize.x / 2, startBgPos.y + startBgSize.y};
+
+        startButton = LoadTexture("textures/Start_Button.png");
+        startButtonRec = {startButtonPos.x, startButtonPos.y, startButtonSize.x, startButtonSize.y};
+    }
+
+    ~StartMenu()
+    {
+        UnloadTexture(startBg);
+        UnloadTexture(startButton);
+    }
+
+    void Draw()
+    {
+        DrawTexturePro(startBg,
+                       Rectangle{0, 0, (float)startBg.width, (float)startBg.height},
+                       startBgRec,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+
+        DrawTexturePro(startButton,
+                       Rectangle{0, 0, (float)startButton.width, (float)startButton.height},
+                       startButtonRec,
+                       Vector2{0, 0},
+                       0.0f,
+                       WHITE);
+    }
+
+    void HandleStartButtonClick(bool &startScreen)
+    {
+        if (CheckCollisionPointRec(GetMousePosition(), startButtonRec) && IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            startScreen = false;
+        }
     }
 };
 
@@ -536,12 +787,16 @@ int main()
 {
     // Initialize raylib
     InitWindow(GetScreenWidth(), GetScreenHeight(), "Sudoku Game");
+    // InitWindow(1080, 720, "Sudoku Game");
+    SetTargetFPS(60);
 
     // Set the window to full screen
     ToggleFullscreen();
 
     int windowWidth = GetScreenWidth();
     int windowHeight = GetScreenHeight();
+    // int windowWidth = 1080;
+    // int windowHeight = 720;
 
     // Calculate the center of the screen
     int centerX = windowWidth / 2;
@@ -551,14 +806,20 @@ int main()
     int offsetX = centerX - (9 * (2.0f * windowWidth / 27)) / 2;
     int offsetY = centerY - (9 * (2.0f * windowHeight / 27)) / 2;
 
+    // Create the StartMenu instance
+    StartMenu start(windowWidth, windowHeight);
+
     // Generate the puzzle
     generatePuzzle puzzleGenerator;
 
     // Create the Sudoku game instance
-    SudokuGame game(windowWidth, windowHeight, initialBoard, offsetX, offsetY);
+    SudokuGame game(windowWidth, windowHeight, puzzleGenerator.initialBoard, offsetX, offsetY);
 
     // Flag to track if the game is won
     bool gameWon = false;
+
+    // Flag to check if game started
+    bool startScreen = true;
 
     // Main game loop
     while (!WindowShouldClose())
@@ -566,42 +827,57 @@ int main()
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        if (!gameWon)
+        if (startScreen)
         {
-            // Handle mouse input
-            game.HandleMouseInput();
-
-            // Handle keyboard input for moving the selected cell
-            game.HandleKeyboardInput();
-
-            // Handle number input for entering numbers into the Sudoku grid
-            game.HandleNumberInput();
-
-            game.HandleResetButton();
+            start.Draw();
+            start.HandleStartButtonClick(startScreen);
         }
-
-        // Draw the grid with the centered offset and thicker lines
-        game.DrawGrid();
-
-        // Draw the numbers on the Sudoku grid
-        game.DrawNumbers();
-
-        // Check if Sudoku is solved and the game is not won yet
-        if (game.IsSudokuSolved() && !gameWon)
+        else
         {
-            gameWon = true; // Set the game as won
-        }
+            if (!gameWon)
+            {
+                // Handle mouse input
+                game.HandleMouseInput();
 
-        if (gameWon)
-        {
-            // Display "You Won!" message in the center with a larger font size
-            DrawText("YOU WON!", windowWidth / 2 - MeasureText("You Won!", 100) / 2, windowHeight / 2 - 25, 100, GREEN);
+                // Handle keyboard input for moving the selected cell
+                game.HandleKeyboardInput();
+
+                // Handle number input for entering numbers into the Sudoku grid
+                game.HandleNumberInput();
+            }
+
+            // Draw the grid with the centered offset and thicker lines
+            game.DrawGrid();
+
+            // Draw the numbers on the Sudoku grid
+            game.DrawNumbers();
+
+            // Check if Sudoku is solved and the game is not won yet
+            if (game.IsSudokuSolved() && !gameWon)
+            {
+                gameWon = true;        // Set the game as won
+                game.IncrementScore(); // Increment the player's score
+            }
+
+            game.HandleResetButton(gameWon);
+            game.HandleTurnOffButton();
+
+            // Draw the buttons (reset, turn off and next button)
+            game.DrawButtons(gameWon); // Draw buttons after grid lines
+
+            if (gameWon)
+            {
+                // Display "You Won!" message in the center with a larger font size
+                // DrawText("YOU WON!", windowWidth / 2 - MeasureText("You Won!", 100) / 2, windowHeight / 2 - 25, 100, GREEN);
+
+                game.YouWin();
+
+                game.HandleNextButtonClick(gameWon);
+            }
         }
 
         EndDrawing();
     }
-
-    game.Unload_Reset_Button();
 
     // Close raylib
     CloseWindow();
