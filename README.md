@@ -30,17 +30,22 @@ This Sudoku Raylib Project is a fun and interactive way to play the classic Sudo
 
 ## Game Screenshots
 
-### Before Starting
+Here are some screenshots of the Sudoku game:
 
-<div align="center">
-  <img src="https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/e6bdd775-8867-438b-9dfc-6c60a60128c7" width="52%" alt="Sudoku Game Before Starting">
-</div>
+![SudokuMainScreen](https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/eda13864-3261-4edd-9f34-244b3b14e831)
+*Begin your Sudoku journey in full-screen mode.*
 
-### After Some Progress
+![SudokuMainScreen2](https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/f60693a5-458a-425e-b86e-660acd284b08)
+*Enjoy Sudoku in windowed mode for a comfortable experience.*
 
-<div align="center">
-  <img src="https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/573daeba-3329-4c35-a51e-b599154c510e" width="45%" alt="Sudoku Game After Some Progress">
-</div>
+![GameScreenshot_1](https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/52f6ebce-bc03-473a-a05f-44e70fe9ed17)
+*Immerse yourself in the main Sudoku game board.*
+
+![GameScreenshot_2](https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/1f686361-15f6-44b6-aa71-08f38f2c2576)
+*Engage with the game as you solve puzzles.*
+
+![GameScreenshot_3](https://github.com/Skofficial2007/Sudoku_Raylib_Project/assets/94291950/cbc2ebd8-5a06-47e2-9c57-bc380d8f25a3)
+*Celebrate your triumph when you successfully complete the puzzle.*
 
 ## Getting Started
 
