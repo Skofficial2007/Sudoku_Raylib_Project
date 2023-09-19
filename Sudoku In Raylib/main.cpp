@@ -131,7 +131,7 @@ public:
     {
         // Randomly remove numbers from the generated puzzle
         srand(time(NULL)); // Initialize random seed
-        int removals = 1;  // Number of numbers to remove
+        int removals = 35;  // Number of numbers to remove
 
         while (removals > 0)
         {
